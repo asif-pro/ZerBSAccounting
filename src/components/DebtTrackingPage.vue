@@ -90,7 +90,7 @@
             <div class="kh-col-12">
               <div class="kh-card kh-card-flex kh-card-person">
                 <div class="kh-card-content">
-                  <div class="kh-card-person-thumb"><img :src="getAvatar(this.$parent.debtForTransactionObj.meta.debt_email, 400)"/></div>
+                  <div class="kh-card-person-thumb"><img :src="this.$parent.getAvatar(this.$parent.debtForTransactionObj.meta.debt_email, 400)"/></div>
                   <div class="kh-card-person-detail">
                     <h4>
                       {{this.$parent.debtForTransactionObj.title.rendered}}
@@ -109,7 +109,7 @@
                     </p> 
                   </div>
                   <div class="kh-card-person-detail-2">
-                    <p class="kh-current-debt">{{this.$parent.debtForTransactionObj.debt_type == 'credit' ? `You owe to ${this.$parent.debtForTransactionObj.title.rendered} ` : `${this.$parent.debtForTransactionObj.title.rendered} owes you `}}<span class="kh-amount" :class="[this.$parent.debtForTransactionObj.debt_type == 'credit' ? 'kh-amount-expense' : '']">{{this.$parent.debtForTransactionObj.debt_amount ? currencify(this.$parent.debtForTransactionObj.debt_amount, 0) : currencify('00', 0)}}</span></p>
+                    <p class="kh-current-debt">{{this.$parent.debtForTransactionObj.debt_type == 'credit' ? `You owe to ${this.$parent.debtForTransactionObj.title.rendered} ` : `${this.$parent.debtForTransactionObj.title.rendered} owes you `}}<span class="kh-amount" :class="[this.$parent.debtForTransactionObj.debt_type == 'credit' ? 'kh-amount-expense' : '']">{{this.$parent.debtForTransactionObj.debt_amount ? this.$parent.currencify(this.$parent.debtForTransactionObj.debt_amount, 0) : this.$parent.currencify('00', 0)}}</span></p>
                     <p v-if="this.$parent.debtForTransactionObj.meta.debt_note">
                       <span v-if="this.$parent.debtForTransactionObj.meta.debt_note.length > 70">
                         <span v-if="!this.$parent.readMoreActivated">{{this.$parent.debtForTransactionObj.meta.debt_note.slice(0, 70)}}</span>

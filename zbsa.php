@@ -160,7 +160,7 @@ class Zero_BS_Accounting{
             wp_enqueue_style("$this->plugin-google-icon", 'https://fonts.googleapis.com/icon?family=Material+Icons+Outlined');
             wp_enqueue_style("$this->plugin-google-font", 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
             wp_enqueue_script("chart-js", plugins_url('/assets/js/chart.min.js', __FILE__));
-            wp_enqueue_script("$this->plugin-js", plugins_url('/dist/js/scripts.js', __FILE__), array(), filemtime(plugin_dir_path(__FILE__) . 'dist/js/scripts.js'), true);
+            wp_enqueue_script("$this->plugin-js", plugins_url('/dist/js/scripts.js', __FILE__), array("jquery"), filemtime(plugin_dir_path(__FILE__) . 'dist/js/scripts.js'), true);
             wp_localize_script("$this->plugin-js", 'zbs_account', array(
                 'site'      => site_url('/'),
                 'plugin_dir_url'=> plugins_url('/public', __FILE__),
