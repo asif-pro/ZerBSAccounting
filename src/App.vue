@@ -736,7 +736,7 @@ export default {
             }
           };
 
-
+// console.log(formData);
           var createPost = new XMLHttpRequest();
           createPost.open("POST", zbs_account.site + 'wp-json/wp/v2/transaction');
           createPost.setRequestHeader("X-WP-Nonce", zbs_account.nonce);
