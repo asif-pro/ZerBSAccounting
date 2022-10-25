@@ -68,7 +68,7 @@
     <div class="zbs-notification" :class="{ active: notificationEnable }">{{notification}}
     </div>
     
-          <div class="kh-post-pop" v-bind:class="{ active: postPop }" v-on:click="handleFormFocus">
+          <div class="kh-post-pop" v-bind:class="{ active: postPop }" @click="handleFormFocus">
             <form id="postForm" class="post-form" @submit.prevent="submit">
               <label class="placehold-btn">
                 <input type="checkbox" v-model="postPop"/>
@@ -344,69 +344,7 @@ export default {
    mounted(){
 
      this.chartLoad()
-    // var ctxes = document.querySelectorAll('.chart-canvas');
-    // ctxes.forEach((item, index) => {
-    //   var ctx = item.getContext('2d'),
-    //       type = item.getAttribute('data-type'),
-    //       label = item.getAttribute('data-label'),
-    //       data = JSON.parse(item.getAttribute('data-data')),
-    //       backgroundColor = JSON.parse(item.getAttribute('data-backgroundColor')),
-    //       borderColor = JSON.parse(item.getAttribute('data-borderColor')),
-    //       borderWidth = item.getAttribute('data-borderWidth'),
-    //       labels = JSON.parse(item.getAttribute('data-labels'));
-
-    //   var datasets = [{
-    //     label,
-    //     data,
-    //     backgroundColor,
-    //     borderColor,
-    //     borderWidth
-    //   }];
-
-    //   if(item.getAttribute('data-label2')){
-    //     var label2 = item.getAttribute('data-label2'),
-    //         data2 = JSON.parse(item.getAttribute('data-data2')),
-    //         backgroundColor2 = JSON.parse(item.getAttribute('data-backgroundColor2')),
-    //         borderColor2 = JSON.parse(item.getAttribute('data-borderColor2')),
-    //         borderWidth2 = item.getAttribute('data-borderWidth2');
-
-    //     datasets.push({label: label2, data: data2, backgroundColor: backgroundColor2, borderColor: borderColor2, borderWidth: borderWidth2});
-    //   }
-
-    //   new Chart(ctx, {
-    //       type,
-    //       data: {
-    //           labels,
-    //           datasets
-    //       },
-    //       options: {
-    //           legend: {
-    //               display: false
-    //           },
-    //           plugins: {
-    //               title: {
-    //                   display: false
-    //               }
-    //           },
-    //           scales: {
-    //               x: {
-    //                 grid: {
-    //                   display: false
-    //                 },
-    //                 ticks: {
-    //                       display: type == 'bar' ? true : false
-    //                   }
-    //               },
-    //               y: {
-    //                   display: false,
-    //                   ticks: {
-    //                       display: false
-    //                   }
-    //               }
-    //           }
-    //       }
-    //   });
-    // });
+  
   },
 
    data() {
@@ -560,6 +498,71 @@ export default {
   methods: {
     getImgUrl: function(file){
       return this.plugin_url + file;
+    },
+    chartLoad(){
+      var ctxes = document.querySelectorAll('.chart-canvas');
+    ctxes.forEach((item, index) => {
+      var ctx = item.getContext('2d'),
+          type = item.getAttribute('data-type'),
+          label = item.getAttribute('data-label'),
+          data = JSON.parse(item.getAttribute('data-data')),
+          backgroundColor = JSON.parse(item.getAttribute('data-backgroundColor')),
+          borderColor = JSON.parse(item.getAttribute('data-borderColor')),
+          borderWidth = item.getAttribute('data-borderWidth'),
+          labels = JSON.parse(item.getAttribute('data-labels'));
+
+      var datasets = [{
+        label,
+        data,
+        backgroundColor,
+        borderColor,
+        borderWidth
+      }];
+
+      if(item.getAttribute('data-label2')){
+        var label2 = item.getAttribute('data-label2'),
+            data2 = JSON.parse(item.getAttribute('data-data2')),
+            backgroundColor2 = JSON.parse(item.getAttribute('data-backgroundColor2')),
+            borderColor2 = JSON.parse(item.getAttribute('data-borderColor2')),
+            borderWidth2 = item.getAttribute('data-borderWidth2');
+
+        datasets.push({label: label2, data: data2, backgroundColor: backgroundColor2, borderColor: borderColor2, borderWidth: borderWidth2});
+      }
+
+      new Chart(ctx, {
+          type,
+          data: {
+              labels,
+              datasets
+          },
+          options: {
+              legend: {
+                  display: false
+              },
+              plugins: {
+                  title: {
+                      display: false
+                  }
+              },
+              scales: {
+                  x: {
+                    grid: {
+                      display: false
+                    },
+                    ticks: {
+                          display: type == 'bar' ? true : false
+                      }
+                  },
+                  y: {
+                      display: false,
+                      ticks: {
+                          display: false
+                      }
+                  }
+              }
+          }
+      });
+    });
     },
     viewConfigurationPage(){
       this.configActive = true;
@@ -1746,72 +1749,8 @@ export default {
     },
     deactivateReadMore: function(){
       this.readMoreActivated = false;
-    },
-    chartLoad(){
-      var ctxes = document.querySelectorAll('.chart-canvas');
-    ctxes.forEach((item, index) => {
-      var ctx = item.getContext('2d'),
-          type = item.getAttribute('data-type'),
-          label = item.getAttribute('data-label'),
-          data = JSON.parse(item.getAttribute('data-data')),
-          backgroundColor = JSON.parse(item.getAttribute('data-backgroundColor')),
-          borderColor = JSON.parse(item.getAttribute('data-borderColor')),
-          borderWidth = item.getAttribute('data-borderWidth'),
-          labels = JSON.parse(item.getAttribute('data-labels'));
-
-      var datasets = [{
-        label,
-        data,
-        backgroundColor,
-        borderColor,
-        borderWidth
-      }];
-
-      if(item.getAttribute('data-label2')){
-        var label2 = item.getAttribute('data-label2'),
-            data2 = JSON.parse(item.getAttribute('data-data2')),
-            backgroundColor2 = JSON.parse(item.getAttribute('data-backgroundColor2')),
-            borderColor2 = JSON.parse(item.getAttribute('data-borderColor2')),
-            borderWidth2 = item.getAttribute('data-borderWidth2');
-
-        datasets.push({label: label2, data: data2, backgroundColor: backgroundColor2, borderColor: borderColor2, borderWidth: borderWidth2});
-      }
-
-      new Chart(ctx, {
-          type,
-          data: {
-              labels,
-              datasets
-          },
-          options: {
-              legend: {
-                  display: false
-              },
-              plugins: {
-                  title: {
-                      display: false
-                  }
-              },
-              scales: {
-                  x: {
-                    grid: {
-                      display: false
-                    },
-                    ticks: {
-                          display: type == 'bar' ? true : false
-                      }
-                  },
-                  y: {
-                      display: false,
-                      ticks: {
-                          display: false
-                      }
-                  }
-              }
-          }
-      });
-    });
     }
+    
 
   },
 

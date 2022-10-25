@@ -95,9 +95,14 @@ class Zero_BS_Accounting{
      */
     public function zbs_account_action_links($links)
     {
+       $pageID =  get_option('zbs-accountpage');
+       
+       if ($pageID){
+           
         $links = array_merge(array(
-      '<a target="_blank" href="' . esc_url(get_page_link(get_option('zbs-accountpage'))) . '">' . __('ZBS Page', 'zbs-account') . '</a>'
-    ), $links);
+            '<a target="_blank" href="' . esc_url(get_page_link(get_option('zbs-accountpage'))) . '">' . __('ZBS Page', 'zbs-account') . '</a>'
+          ), $links);
+       }
   
         return $links;
     }

@@ -4,6 +4,12 @@ const path = require('path');
 const isDev = (process.env.NODE_ENV = 'development');
 
 module.exports = defineConfig({
+  devServer: {
+    host: 'localhost',
+    port: 8080,
+    hot: true
+  },
+  publicPath: '/',
   transpileDependencies: true,
   css : {
     extract: false,
