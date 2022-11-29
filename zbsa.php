@@ -45,12 +45,10 @@ class Zero_BS_Accounting{
         add_action('rest_api_init', [$this, 'zbs_account_formated_date_on_rest']);
         add_action('wp_ajax_zbs_subscribe', [$this, 'zbs_account_subscribe']);
         add_action('init', [$this, 'appsero_init_tracker_zero_bs_accounting']);
-        //add_action('wp_ajax_zbs_displayProfile', [$this, 'zbs_account_displayProfile']);
-        //add_action('wp_ajax_nopriv_zbs_displayProfile', [$this, 'zbs_account_displayProfile']);
         add_action('wp_ajax_zbs_insertProfile', [$this, 'zbs_account_insertProfile']);
         add_action('wp_ajax_nopriv_zbs_insertProfile', [$this, 'zbs_account_insertProfile']);
-        //add_action('wp_ajax_zbs_updateProfile', [$this, 'zbs_account_updateProfile']);
-        //add_action('wp_ajax_nopriv_zbs_updateProfile', [$this, 'zbs_account_updateProfile']);
+        add_action('wp_ajax_zbs_updateProfile', [$this, 'zbs_account_updateProfile']);
+        add_action('wp_ajax_nopriv_zbs_updateProfile', [$this, 'zbs_account_updateProfile']);
         add_action('wp_ajax_zbs_deleteProfile', [$this, 'zbs_account_deleteProfile']);
         add_action('wp_ajax_nopriv_zbs_deleteProfile', [$this, 'zbs_account_deleteProfile']); 
         add_action('wp_ajax_zbs_displayProfile', [$this, 'zbs_account_displayProfile']);
@@ -720,21 +718,6 @@ class Zero_BS_Accounting{
         die();
     }
     /**
-     * Display all the Account Profiles for respected user
-     */
-    /* public function zbs_account_displayProfile(userID){
-        $user = wp_get_current_user();
-        global $wpdb;
-        $table_name = $wpdb->prefix.'account_profiles';
-        $result = $wpdb->get_row("SELECT * from {$table_name} WHERE user_id = %d", $user->ID);
-                //now print the result
-                echo $result->name;
-
-        $result = $wpdb->get_row("SELECT * from {$table_name}");
-
-        return result;
-    die();} */
-    /**
      * Adding Account Profile
      */
      public function zbs_account_insertProfile(){
@@ -750,19 +733,22 @@ class Zero_BS_Accounting{
                     //'user_id'=>$user->ID
                     'user_id'=>$_POST['u_id']
                     ]);
-        //echo $uid;
+
         echo "Done";
 
-    die();} 
+        die();
+    } 
     /**
      * Editing Account Profile
      */
-    /* public function zbs_account_updateProfile(){
+    public function zbs_account_updateProfile(){
         global $wpdb;
         $table_name = $wpdb->prefix.'account_profiles';
         $name = $_POST['updatedName'];
+        $id = $_POST['id'];
         $wpdb->UPDATE($table_name,['account_name'=>$name],['id'=>$id]);  //get the $id first
-    die();} */
+        die();
+    }
     /**
      * Deleting Account Profile
      */
@@ -775,39 +761,20 @@ class Zero_BS_Accounting{
         echo "Deleted";
     die();}
 
+    /**
+     * Display all the Account Profiles for respected user
+     */
     public function zbs_account_displayProfile(){
-       // $data = $_POST['data'];
-       // echo "Hello".strtoupper($data);
-
         //$user = wp_get_current_user();
         //$user = get_current_user_id();
         $user = $_POST['uid'];
         global $wpdb;
         $table_name = $wpdb->prefix.'account_profiles';
-        //$result = $wpdb->get_row("SELECT * from {$table_name} WHERE user_id = %d", $user->ID);
         $result = $wpdb->get_results("SELECT * from {$table_name} WHERE user_id = $user");
-                //now print the result
-                //echo $result->name;
-
-        //$result = $wpdb->get_row("SELECT * from {$table_name}");
 
         print_r($result);
         echo "break";
         echo $result->account_name;
-
-
-        /* $user = wp_get_current_user();
-        $uid = $user->ID;
-        global $wpdb;
-        $table_name = $wpdb->prefix.'account_profiles';
-        $name = "Sakib";
-        //$name = $_POST['accountName']; //get the the value for these variable
-          
-            $wpdb->INSERT("{$table_name}",
-                    [
-                    'account_name'=>$name,
-                    'user_id'=>$uid
-                    ]); */
 
         die();
     }

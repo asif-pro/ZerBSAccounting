@@ -23,6 +23,7 @@ class Zero_BS_AccountingPluginActivate
           $checkuser = $wpdb->get_var(
             $wpdb->prepare( "SELECT COUNT(*) from {$table_name} where user_id = %d", get_current_user_id() )
           );
+          
           if(! $checkuser){
             $wpdb->insert($table_name,
                 [

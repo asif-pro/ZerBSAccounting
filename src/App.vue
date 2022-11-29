@@ -1758,7 +1758,11 @@ export default {
           });
 
     },
-    //updateProfile: function(){},
+    updateProfile: function(){
+      jQuery.post(zbs_account.ajaxurl,{ 'action':'zbs_updateProfile','id': 0,'updatedName':'Aname' }, function(data){
+              //console.log(data);
+          });
+    },
     deleteProfile: function(){
       jQuery.post(zbs_account.ajaxurl,{ 'action':'zbs_deleteProfile','id': 0 }, function(data){
               //console.log(data);
