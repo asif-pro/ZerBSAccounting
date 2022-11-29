@@ -1,11 +1,23 @@
 <template>
   <div class="accounting-page" :style="{ display: this.$parent.sidebarPage == 'accounting' ? 'block' : 'none' }">
       <div class="kh-container" v-if="this.$parent.user">
-        <div class="kh-row">
+        <!-- <div class="kh-row">
             <div class="kh-col">
                 <h3 class="top-welecome">Hi, {{this.$parent.user.data.display_name}}</h3>
             </div>
-        </div>
+        </div> -->
+        <div class="kh-row">
+            <div class="kh-col debt-tracking-title">
+              <h3 class="top-welecome">Hi, {{this.$parent.user.data.display_name}}</h3>
+              <div class="profile-select">
+                <span class="profile-selected">
+                  <span>Using as self</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512.011 512.011"><path d="M505.755 123.592c-8.341-8.341-21.824-8.341-30.165 0L256.005 343.176 36.421 123.592c-8.341-8.341-21.824-8.341-30.165 0s-8.341 21.824 0 30.165l234.667 234.667c4.16 4.16 9.621 6.251 15.083 6.251s10.923-2.091 15.083-6.251l234.667-234.667c8.34-8.341 8.34-21.824-.001-30.165z"/></svg>
+                </span>
+                <div class="profile-selector" @click="this.$parent.proPop=true">Add a new profile (Pro)</div>
+              </div>
+            </div>
+          </div>
 
         <div class="kh-mt-2">
           <div class="kh-row">

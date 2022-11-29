@@ -2,20 +2,21 @@
    <div class="zbs-account" @click="handleOpenClick">
       <div class="zbs-sidebar" v-if="user">
      <ul class="zbs-sidebar-menu">
-        <li v-bind:class="{active: sidebarPage == 'accounting'}" @click="sidebarPageChange('accounting')"><span class="material-icons-outlined">home</span><span class="sidebar-menu-title">Accounting</span></li>
+        <li :class="{active: sidebarPage == 'accounting'}" @click="sidebarPageChange('accounting')"><span class="material-icons-outlined">home</span><span class="sidebar-menu-title">Accounting</span></li>
 
-           <li v-bind:class="{active: sidebarPage == 'debt'}" @click="sidebarPageChange('debt')"><span class="material-icons-outlined">calculate</span><span class="sidebar-menu-title">Debt Tracking</span></li>
+           <li :class="{active: sidebarPage == 'debt'}" @click="sidebarPageChange('debt')"><span class="material-icons-outlined">calculate</span><span class="sidebar-menu-title">Debt Tracking</span></li>
          
-         <li v-bind:class="{active: sidebarPage == 'overview'}" @click="sidebarPageChange('overview')"><span class="material-icons-outlined">layers</span><span class="sidebar-menu-title">Overview</span></li>
+         <li :class="{active: sidebarPage == 'overview'}" @click="sidebarPageChange('overview')"><span class="material-icons-outlined">layers</span><span class="sidebar-menu-title">Overview</span></li>
 
-         <li v-bind:class="{active: sidebarPage == 'categories'}" @click="sidebarPageChange('categories'); newcat=''"><span class="material-icons-outlined">folder_special</span><span class="sidebar-menu-title">Categories</span></li>
+         <li :class="{active: sidebarPage == 'categories'}" @click="sidebarPageChange('categories'); newcat=''"><span class="material-icons-outlined">folder_special</span><span class="sidebar-menu-title">Categories</span></li>
 
-         <li v-bind:class="{active: sidebarPage == 'integrations'}" @click="sidebarPageChange('integrations')"><span class="material-icons-outlined">extension</span><span class="sidebar-menu-title">Integrations</span></li>
+         <li :class="{active: sidebarPage == 'integrations'}" @click="sidebarPageChange('integrations')"><span class="material-icons-outlined">extension</span><span class="sidebar-menu-title">Integrations</span></li>
 
          <li class="setting-item" :class="{active: configActive}" @click="viewConfigurationPage"><span class="material-icons-outlined">settings</span><span class="sidebar-menu-title">Configuration</span></li>
       </ul>
        <ul class="zbs-sidebar-menu zbs-sidebar-menu-bottom">
-        <li v-bind:class="{active: configActive}" @click="viewConfigurationPage"><span class="material-icons-outlined">settings</span><span class="sidebar-menu-title">Configuration</span></li>
+        <li :class="{active: sidebarPage == 'integrations'}" @click="sidebarPageChange('manageAccountProfile')"><span class="material-icons-outlined">wallet</span><span class="sidebar-menu-title">Manage Account Profile</span></li>
+        <li :class="{active: configActive}" @click="viewConfigurationPage"><span class="material-icons-outlined">settings</span><span class="sidebar-menu-title">Configuration</span></li>
       </ul> 
 
 
@@ -68,7 +69,7 @@
     <div class="zbs-notification" :class="{ active: notificationEnable }">{{notification}}
     </div>
     
-          <div class="kh-post-pop" v-bind:class="{ active: postPop }" @click="handleFormFocus">
+          <div class="kh-post-pop" :class="{ active: postPop }" @click="handleFormFocus">
             <form id="postForm" class="post-form" @submit.prevent="submit">
               <label class="placehold-btn">
                 <input type="checkbox" v-model="postPop"/>
@@ -214,6 +215,11 @@
   </ConfigurationPage>
 </div>
 
+<div v-if="sidebarPage == 'manageAccountProfile'">
+  <ManageAccountProfile>
+  </ManageAccountProfile>
+</div>
+
    </div>
 </template>
 
@@ -225,6 +231,7 @@ import IntegrationsPage from './components/IntegrationsPage.vue'
 import CategoriesPage from './components/CategoriesPage.vue'
 import Overview from './components/Overview.vue'
 import ConfigurationPage from './components/ConfigurationPage.vue'
+import ManageAccountProfile from './components/ManageAccountProfile.vue'
 
 
 export default {
@@ -235,7 +242,8 @@ export default {
     CategoriesPage,
     IntegrationsPage,
     Overview,
-    ConfigurationPage
+    ConfigurationPage,
+    ManageAccountProfile
   },
 
    created(){
@@ -1743,8 +1751,32 @@ export default {
     
       return temp.toLowerCase();
     },
+    //displayProfile: function(){},
+    inserProfile: function(){
+      jQuery.post(zbs_account.ajaxurl,{ 'action':'zbs_insertProfile','u_id': 0,'accountName':'Aname' }, function(data){
+              //console.log(data);
+          });
 
-      activateReadMore: function(){
+    },
+    //updateProfile: function(){},
+    deleteProfile: function(){
+      jQuery.post(zbs_account.ajaxurl,{ 'action':'zbs_deleteProfile','id': 0 }, function(data){
+              //console.log(data);
+          });
+    },
+    displayProfile: function(){
+     /* let name = "unnamed";
+     jQuery.post(zbs_account.ajaxurl,{ 'actiion':'zbs_displayProfile','data': name }, function(data){
+              console.log(data);
+          }); */
+      
+          
+     jQuery.post(zbs_account.ajaxurl,{ 'action':'zbs_displayProfile','uid': 4 }, function(data){
+              
+          });
+    },
+
+    activateReadMore: function(){
       this.readMoreActivated = true;
     },
     deactivateReadMore: function(){
