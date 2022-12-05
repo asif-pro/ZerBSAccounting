@@ -53,6 +53,8 @@ class Zero_BS_Accounting{
         add_action('wp_ajax_nopriv_zbs_deleteProfile', [$this, 'zbs_account_deleteProfile']); 
         add_action('wp_ajax_zbs_displayProfile', [$this, 'zbs_account_displayProfile']);
         add_action('wp_ajax_nopriv_zbs_displayProfile', [$this, 'zbs_account_displayProfile']);
+        add_action('wp_ajax_zbs_profileID', [$this, 'zbs_account_setDefaultProfileID']);
+        add_action('wp_ajax_nopriv_zbs_profileID', [$this, 'zbs_account_setDefaultProfileID']);
     }
 
     function zbs_register_settings() {
@@ -181,7 +183,7 @@ class Zero_BS_Accounting{
                 'nonce'     => wp_create_nonce('wp_rest'),
                 'login_url' => wp_login_url(site_url('/zero-bs-accounting'), false),
                 'ajaxurl' => admin_url('admin-ajax.php'),
-                //'default_profile'  => get_user_meta('zbs_profile', true),
+                'default_profile'  => get_user_meta('zbs_profile', true),
                 'ajaxnonce' => wp_create_nonce('ajax-nonce')
                 
             ));
@@ -721,20 +723,59 @@ class Zero_BS_Accounting{
      * Adding Account Profile
      */
      public function zbs_account_insertProfile(){
-        //$user = wp_get_current_user();
-        //$uid = $_POST['u_id'];
+        /* //$user = wp_get_current_user();
+        $uid = $_POST['u_id'];
         global $wpdb;
         $table_name = $wpdb->prefix.'account_profiles';
-        //$name = $_POST['accountName']; //get the the value for these variable
-          
-            $wpdb->INSERT("{$table_name}",
+        //$name = $_POST['accountName']; //get the the value for these variable$uid = $_POST['u_id'];
+        $wpdb->INSERT("{$table_name}",
                     [
                     'account_name'=>$_POST['accountName'],
                     //'user_id'=>$user->ID
                     'user_id'=>$_POST['u_id']
                     ]);
 
-        echo "Done";
+            echo "Account Created Successfully"; */
+        global $wpdb;
+        $table_name = $wpdb->prefix.'account_profiles';
+        $name = $_POST['accountName']; //get the the value for these variable
+        $uid = $_POST['u_id'];
+        $result = $wpdb->get_results("SELECT * from {$table_name} WHERE user_id = $uid");
+        
+        if ($name== NULL || $name == " "){
+            echo "Account Name can't be Empty";
+            return;
+        }
+
+        if($result){
+            foreach($result as $data){
+                if($data->account_name == $_POST['accountName'] ){
+                    echo "Account Already Exists";
+                    return;
+                }
+                else{
+                    $wpdb->INSERT("{$table_name}",
+                    [
+                    'account_name'=>$_POST['accountName'],
+                    //'user_id'=>$user->ID
+                    'user_id'=>$_POST['u_id']
+                    ]);
+
+                    echo "Account created successfully";
+                    return;
+                }
+            }
+        }else{
+            $wpdb->INSERT("{$table_name}",
+                    [
+                    'account_name'=>$_POST['accountName'],
+                    //'user_id'=>$user->ID
+                    'user_id'=>$_POST['u_id']
+                    ]);
+                    echo "Account created successfully";
+                    return;
+        }
+            
 
         die();
     } 
@@ -743,23 +784,53 @@ class Zero_BS_Accounting{
      */
     public function zbs_account_updateProfile(){
         global $wpdb;
+        $user = wp_get_current_user();
         $table_name = $wpdb->prefix.'account_profiles';
         $name = $_POST['updatedName'];
         $id = $_POST['id'];
-        $wpdb->UPDATE($table_name,['account_name'=>$name],['id'=>$id]);  //get the $id first
+        $getRow = $wpdb->get_results("SELECT * from {$table_name} WHERE id = $id");
+        if($getRow){
+            if($user->ID == $getRow->u_id){
+                $wpdb->UPDATE($table_name,['account_name'=>$name],['id'=>$id]);//get the $id first
+                echo "Update Successful";
+            }
+            else{
+                echo "Invalid User";
+            }
+            
+        }
+        else{
+            echo "No Data Found to Update";
+        }
+
         die();
     }
     /**
      * Deleting Account Profile
      */
     public function zbs_account_deleteProfile(){
-        $id = $_POST['id'];
+        
         global $wpdb;
+        $user = wp_get_current_user();
+        $id = $_POST['id'];
         $table_name = $wpdb->prefix.'account_profiles';
+        $getRow = $wpdb->get_results("SELECT * from {$table_name} WHERE id = $id");
+        if($getRow){
+            if($user->ID == $getRow->u_id){
+                $wpdb->DELETE($table_name,['id'=>$id]); //get the $id first
+                echo "Account Deleted";
+            }
+            else{
+                echo "Invalid User";
+            }
+            
+        }
+        else{
+            echo "There is no such Account to Delete";
+        }
 
-        $wpdb->DELETE($table_name,['id'=>$id]); //get the $id first
-        echo "Deleted";
-    die();}
+        die();
+    }
 
     /**
      * Display all the Account Profiles for respected user
@@ -772,11 +843,40 @@ class Zero_BS_Accounting{
         $table_name = $wpdb->prefix.'account_profiles';
         $result = $wpdb->get_results("SELECT * from {$table_name} WHERE user_id = $user");
 
-        print_r($result);
-        echo "break";
-        echo $result->account_name;
-
+        if($result){
+            //print_r($result);
+            foreach($result as $data){
+                echo $data->account_name;
+                echo "<br>";
+            }
+        }
+        else{
+            echo "No Existing Account For this User, Please create a new One ";
+        }
         die();
+    }
+    public function zbs_account_setDefaultProfileID($profileID){
+        //$user = wp_get_current_user();
+        $current_userID = get_current_user_id();
+
+        $userID = $_POST['uid']; //for postman will be deleted later
+        $profileID = $_POST['profileID']; //for postman will be deleted later
+        global $wpdb;
+        $table_name = $wpdb->prefix.'account_profiles';
+        $result = $wpdb->get_results("SELECT * from {$table_name} WHERE user_id = $userID");//pore current_userID hobe
+        foreach($result as $data){
+            if($data->id == $profileID){
+                //update_user_meta($profileID,'zbs_profile');
+                //add_user_meta('zbs_profile', $profileID);
+                echo "Exists";
+                return true;
+            }
+            else{
+                echo "This user doesn't have such Account Profile";
+                return false;
+            }
+             
+        }
     }
 
 

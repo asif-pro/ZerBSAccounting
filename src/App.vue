@@ -1751,33 +1751,52 @@ export default {
     
       return temp.toLowerCase();
     },
-    //displayProfile: function(){},
+    
     inserProfile: function(){
-      jQuery.post(zbs_account.ajaxurl,{ 'action':'zbs_insertProfile','u_id': 0,'accountName':'Aname' }, function(data){
-              //console.log(data);
-          });
+      jQuery.post(zbs_account.ajaxurl,
+                    { 'action':'zbs_insertProfile','u_id': 0,'accountName':'Aname'}, 
+                    function(data)
+                    {
+                      //console.log(data);
+                    }
+                  );
 
     },
     updateProfile: function(){
-      jQuery.post(zbs_account.ajaxurl,{ 'action':'zbs_updateProfile','id': 0,'updatedName':'Aname' }, function(data){
-              //console.log(data);
-          });
+      jQuery.post(zbs_account.ajaxurl,
+                    { 'action':'zbs_updateProfile','id': 0,'updatedName':'Aname' }, 
+                    function(data)
+                    {
+                      //console.log(data);
+                    }
+                  );
     },
     deleteProfile: function(){
-      jQuery.post(zbs_account.ajaxurl,{ 'action':'zbs_deleteProfile','id': 0 }, function(data){
-              //console.log(data);
-          });
+      jQuery.post(zbs_account.ajaxurl,
+                    { 'action':'zbs_deleteProfile','id': 0 }, 
+                    function(data)
+                    {
+                      //console.log(data);
+                    }
+                  );
     },
     displayProfile: function(){
-     /* let name = "unnamed";
-     jQuery.post(zbs_account.ajaxurl,{ 'actiion':'zbs_displayProfile','data': name }, function(data){
-              console.log(data);
-          }); */
-      
-          
-     jQuery.post(zbs_account.ajaxurl,{ 'action':'zbs_displayProfile','uid': 4 }, function(data){
-              
-          });
+     jQuery.post(zbs_account.ajaxurl,
+                  { 'action':'zbs_displayProfile','uid': 4 }, 
+                  function(data)
+                  {
+                    //console.log(data);
+                  }
+                );
+    },
+    defaultProfileID: function(){
+     jQuery.post(zbs_account.ajaxurl,
+                  { 'action':'zbs_profileID','uid': 4 , 'profileID': 1 }, 
+                  function(data)
+                  {
+                    //console.log(data);
+                  }
+                );
     },
 
     activateReadMore: function(){

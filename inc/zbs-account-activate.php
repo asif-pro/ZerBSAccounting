@@ -3,10 +3,11 @@
 class Zero_BS_AccountingPluginActivate
 {
   public static function activate() {
+    //if ( ! current_user_can( 'activate_plugins' ) ) return;
 
     global $wpdb;
 
-//creating Table
+//creating Table intially, if already not exists
         $table_name = $wpdb->prefix.'account_profiles';
         $sql = "CREATE TABLE IF NOT EXISTS {$table_name} (
                 id INT NOT NULL AUTO_INCREMENT,
@@ -17,9 +18,8 @@ class Zero_BS_AccountingPluginActivate
               require_once (ABSPATH."wp-admin/includes/upgrade.php");
               dbDelta($sql);
 
-//Adding/Insert data into table while creating table
+//Adding/Insert data into table while creating table initially, while there is no data on table
           $user = wp_get_current_user();
-          
           $checkuser = $wpdb->get_var(
             $wpdb->prepare( "SELECT COUNT(*) from {$table_name} where user_id = %d", get_current_user_id() )
           );
