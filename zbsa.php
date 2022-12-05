@@ -738,8 +738,8 @@ class Zero_BS_Accounting{
             echo "Account Created Successfully"; */
         global $wpdb;
         $table_name = $wpdb->prefix.'account_profiles';
-        $name = $_POST['accountName']; //get the the value for these variable
-        $uid = $_POST['u_id'];
+        $name = $_POST['accountName'];
+        $uid = get_current_user_id();
         $result = $wpdb->get_results("SELECT * from {$table_name} WHERE user_id = $uid");
         
         if ($name== NULL || $name == " "){
@@ -758,7 +758,7 @@ class Zero_BS_Accounting{
                     [
                     'account_name'=>$_POST['accountName'],
                     //'user_id'=>$user->ID
-                    'user_id'=>$_POST['u_id']
+                    'user_id'=>$uid
                     ]);
 
                     echo "Account created successfully";
@@ -770,7 +770,7 @@ class Zero_BS_Accounting{
                     [
                     'account_name'=>$_POST['accountName'],
                     //'user_id'=>$user->ID
-                    'user_id'=>$_POST['u_id']
+                    'user_id'=>$uid
                     ]);
                     echo "Account created successfully";
                     return;
@@ -837,22 +837,27 @@ class Zero_BS_Accounting{
      */
     public function zbs_account_displayProfile(){
         //$user = wp_get_current_user();
-        //$user = get_current_user_id();
-        $user = $_POST['uid'];
+        $user = get_current_user_id();
+        //$user = $_POST['uid'];
         global $wpdb;
         $table_name = $wpdb->prefix.'account_profiles';
         $result = $wpdb->get_results("SELECT * from {$table_name} WHERE user_id = $user");
-
+        $account_names=[];
+        
         if($result){
-            //print_r($result);
             foreach($result as $data){
-                echo $data->account_name;
-                echo "<br>";
+                /* echo $data->account_name;
+                echo "<br>"; */
+                
+                array_push($account_names,$data->account_name);
+                
             }
         }
         else{
             echo "No Existing Account For this User, Please create a new One ";
         }
+        
+        return $account_names;
         die();
     }
     public function zbs_account_setDefaultProfileID($profileID){

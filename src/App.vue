@@ -367,6 +367,8 @@ export default {
         currentPage: 1,
         totalPage: 1
       },
+      accountName: '',
+      accounts: [],
       debtTransactionPaging:{
         pageSize: 3,
         currentPage: 1,
@@ -1754,7 +1756,7 @@ export default {
     
     inserProfile: function(){
       jQuery.post(zbs_account.ajaxurl,
-                    { 'action':'zbs_insertProfile','u_id': 0,'accountName':'Aname'}, 
+                    { 'action':'zbs_insertProfile','accountName':this.accountName}, 
                     function(data)
                     {
                       //console.log(data);
@@ -1785,7 +1787,7 @@ export default {
                   { 'action':'zbs_displayProfile','uid': 4 }, 
                   function(data)
                   {
-                    //console.log(data);
+                    this.accounts.push(data);
                   }
                 );
     },
