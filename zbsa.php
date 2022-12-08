@@ -152,6 +152,9 @@ class Zero_BS_Accounting{
 
     public function zbs_account_menu_item_redirect_url()
     {
+        if(!is_admin()){
+            //wp_redirect(get_the_permalink(get_option('zbs-accountpage')));
+        }
         $menu_redirect = isset($_GET['page']) ? __($_GET['page']) : false;
 
         if (get_option('zbs_accounting_do_activation_redirect', false)) {
@@ -738,9 +741,28 @@ class Zero_BS_Accounting{
             echo "Account Created Successfully"; */
         global $wpdb;
         $table_name = $wpdb->prefix.'account_profiles';
-        $name = $_POST['accountName'];
+        $name = isset($_POST['accountName']) ? sanitize_text_field( $_POST['accountName'] ) : '';
         $uid = get_current_user_id();
-        $result = $wpdb->get_results("SELECT * from {$table_name} WHERE user_id = $uid");
+        $result = $wpdb->get_row(
+                    $wpdb->prepare(
+                        "SELECT `account_name` FROM {$table_name} WHERE user_id = %d AND account_name LIKE %s",
+                        $uid,
+                        $name
+                    )
+                    );
+        
+        if(is_null($result)){
+            $wpdb->INSERT("{$table_name}",
+                    [
+                    'account_name'=>$name,
+                    'user_id'=>$uid
+                    ]);
+            echo "Account not exists";
+        }
+        else{
+            echo"Account Alredy Exists";
+        }
+       /*  $result = $wpdb->get_results("SELECT * from {$table_name} WHERE user_id = $uid");
         
         if ($name== NULL || $name == " "){
             echo "Account Name can't be Empty";
@@ -776,7 +798,7 @@ class Zero_BS_Accounting{
                     return;
         }
             
-
+ */
         die();
     } 
     /**
@@ -841,29 +863,13 @@ class Zero_BS_Accounting{
         //$user = $_POST['uid'];
         global $wpdb;
         $table_name = $wpdb->prefix.'account_profiles';
-        $result = $wpdb->get_results("SELECT * from {$table_name} WHERE user_id = $user");
-        $account_names=[];
+        $result = $wpdb->get_results("SELECT * from {$table_name} WHERE user_id = $user",ARRAY_A);
         
-        if($result){
-            foreach($result as $data){
-                /* echo $data->account_name;
-                echo "<br>"; */
-                
-                array_push($account_names,$data->account_name);
-                
-            }
-        }
-        else{
-            echo "No Existing Account For this User, Please create a new One ";
-        }
-        
-        return $account_names;
-        die();
+        wp_send_json_success($result);
     }
     public function zbs_account_setDefaultProfileID($profileID){
-        //$user = wp_get_current_user();
-        $current_userID = get_current_user_id();
 
+        $current_userID = get_current_user_id();
         $userID = $_POST['uid']; //for postman will be deleted later
         $profileID = $_POST['profileID']; //for postman will be deleted later
         global $wpdb;
@@ -871,16 +877,16 @@ class Zero_BS_Accounting{
         $result = $wpdb->get_results("SELECT * from {$table_name} WHERE user_id = $userID");//pore current_userID hobe
         foreach($result as $data){
             if($data->id == $profileID){
-                //update_user_meta($profileID,'zbs_profile');
-                //add_user_meta('zbs_profile', $profileID);
-                echo "Exists";
-                return true;
+                update_user_meta($current_userID,'zbs_profile', $profileID);
+                wp_send_json_success([
+                    'message'=> __('Account Exists'),
+                ]);
             }
             else{
-                echo "This user doesn't have such Account Profile";
-                return false;
-            }
-             
+                wp_send_json_error([
+                    'message'=> __("This user doesn't have such Account Profile"),
+                ]);
+            } 
         }
     }
 

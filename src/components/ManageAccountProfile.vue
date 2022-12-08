@@ -19,8 +19,8 @@
       </thead>
       <tbody v-for="account in this.$parent.accounts">
         <tr>
-          <td>{{account}}</td>
-          <td>{{account}}</td>
+          <td>{{account.account_name}}</td>
+          <td>{{account.user_id}}</td>
         </tr>
       </tbody>
     </table>

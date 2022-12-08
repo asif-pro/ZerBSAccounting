@@ -1787,7 +1787,8 @@ export default {
                   { 'action':'zbs_displayProfile','uid': 4 }, 
                   function(data)
                   {
-                    this.accounts.push(data);
+                    console.log(data);
+                    this.accounts=data;
                   }
                 );
     },
