@@ -37,8 +37,8 @@
               Currency
               <div class="currency-field_selected">
                 <button type="button" class="currency-name" @click="currencyDrop=true">
-                  <span>{{selectedCurrency.code}}</span>
-                  <span>{{selectedCurrency.symbol_native}}</span>
+                  <span>{{selectedCurrency.code || ''}}</span>
+                  <span>{{selectedCurrency.symbol_native || ''}}</span>
                 </button>
               </div>
               <div class="currency-selector" :class="{active: currencyDrop}">
@@ -139,7 +139,7 @@
                 </div>
                 <div class="cat-list" v-bind:class="{active: catDrop}">
                   <label v-for="item in filteredCat" v-on:click="newcat = item.name; catDrop=false" v-bind:key="item.id">
-                    <span class="cat-icon" v-bind:style="{ color: item.meta.color[0] ? item.meta.color[0] : 'rgb(103, 104, 108)' }"><span class="material-icons-outlined">{{item.meta.icon[0] ? item.meta.icon[0] : 'quiz'}}</span></span>
+                    <span class="cat-icon" v-bind:style="{ color: item.meta && item.meta.color && item.meta.color.length && item.meta.color[0] ? item.meta.color[0] : 'rgb(103, 104, 108)' }"><span class="material-icons-outlined">{{item.meta && item.meta.color && item.meta.color.length && item.meta.icon[0] ? item.meta.icon[0] : 'quiz'}}</span></span>
                     <span class="cat-name" v-html="item.name"></span>
                   </label>
                   <label type="button" v-on:click="catsubmit" v-if="!hasCat[0] && newcat">
@@ -148,8 +148,8 @@
                   </label>
                 </div>
               </label>
-              <label class="field-group field-group-check"><input type="checkbox" v-model="addANote"><span>Add a note with this transaction</span></label>
-              <label class="field-group" v-if="addANote">
+              <label class="field-group field-group-check"><input type="checkbox" :checked="postformtype == 'editpostform' ? postObj.showNote : addANote" @change.prevent="postformtype == 'editpostform' ? postObj.showNote = !postObj.showNote : addANote = !addANote"><span>Add a note with this transaction</span></label>
+              <label class="field-group" v-if="postformtype == 'editpostform' ? postObj.showNote : addANote">
                 Note
                 <textarea :placeholder="postformtype == 'editpostform' ? postObj.meta.transaction_note : 'Have any note...'" v-model="newnote"></textarea>
               </label>
@@ -232,6 +232,7 @@ import CategoriesPage from './components/CategoriesPage.vue'
 import Overview from './components/Overview.vue'
 import ConfigurationPage from './components/ConfigurationPage.vue'
 import ManageAccountProfile from './components/ManageAccountProfile.vue'
+import axios from 'axios'
 
 
 export default {
@@ -254,31 +255,7 @@ export default {
         this.sidebarPage = window.location.hash.replace('#', '');
       }
 
-      // Fetching transactions
-      fetch(zbs_account.site + 'wp-json/wp/v2/transaction?_embed&modified_after='+firstDay.toISOString()+'&author=' + this.user.data.ID)
-        .then((r) => {
-          return r.json();
-        })
-        .then((res) => {
-          this.totalEarning = 0;
-          this.totalExpense = 0;
-          res.map(item => {
-            this.transactions.push({...item, expand: false});
-            if(item.meta.transaction_type == 'Earning'){
-              this.totalEarning += parseFloat(item.meta.transaction_amount);
-            }
-            if(item.meta.transaction_type == 'Expense'){
-              this.totalExpense += parseFloat(item.meta.transaction_amount);
-            }
-          });
-        })
-        .then(() => {
-          if((this.transactions.length / this.paging.pageSize) > parseInt(this.transactions.length / this.paging.pageSize)){
-            this.paging.totalPage =  parseInt(this.transactions.length / this.paging.pageSize) + 1;
-          } else {
-            this.paging.totalPage =  parseInt(this.transactions.length / this.paging.pageSize);
-          }
-        });
+      this.fetchTransactions();
 
       //Fetching Debt
       fetch(zbs_account.site + 'wp-json/wp/v2/debt?_embed&author=' + this.user.data.ID)
@@ -332,7 +309,7 @@ export default {
           })
         });
 
-      fetch(zbs_account.site + 'wp-json/wp/v2/settings', {
+      fetch(zbs_account.ajaxurl + '?action=zbs_get_profile_settings', {
           credentials: 'same-origin',
           headers: {
           'Content-Type': 'application/json',
@@ -340,18 +317,20 @@ export default {
           }
         })
         .then((r) => r.json())
-        .then((res) => {
-          this.siteSetting = res;
-        }).then(() => {
-          this.selectedCurrency = this.allCurrency.find((currency) => currency.code == this.siteSetting.zbs_currency);
-          this.selectedCurrencyPosition = this.siteSetting.zbs_currency_position;
-        });
+        .then((res) => { 
+          const data = res.data;
+          this.selectedCurrency = this.allCurrency.find((currency) => currency.code == data.currency);
+          this.selectedCurrencyPosition = data.currency_position;
+        }).catch(error => {
+          console.log("Settings Error", error); 
+        })
     }
   },
 
    mounted(){
 
      this.chartLoad()
+     this.displayProfile();
   
   },
 
@@ -360,6 +339,7 @@ export default {
       login_url: zbs_account.login_url,
       user: JSON.parse(zbs_account.user),
       plugin_url: zbs_account.plugin_dir_url,
+      default_profile: zbs_account.default_profile,
       transactions: [],
       debts: [],
       paging: {
@@ -368,7 +348,7 @@ export default {
         totalPage: 1
       },
       accountName: '',
-      accounts: [],
+      profiles: [],
       debtTransactionPaging:{
         pageSize: 3,
         currentPage: 1,
@@ -465,7 +445,7 @@ export default {
       .filter((row, index) => {
         let start = (this.paging.currentPage-1)*this.paging.pageSize;
         let end = this.paging.currentPage*this.paging.pageSize;
-        if(index >= start && index < end) return true;
+        if((index >= start && index < end) && this.default_profile === row.meta.transaction_profile) return true;
       });
     },
     filteredDebtTransactions(){
@@ -503,7 +483,23 @@ export default {
     },
     filteredCurrency() {
       return this.allCurrency.filter(data => data.code.toLowerCase().startsWith(this.currencyQuery.toLowerCase()));
-    }
+    },
+
+    totalEarning () {
+      return this.transactions.filter(data => data.meta.transaction_type == 'Earning').reduce((acc, data) => acc + Number(data.meta.transaction_amount), 0);
+    },
+
+    totalExpense () {
+      return this.transactions.filter(data => data.meta.transaction_type == 'Expense').reduce((acc, data) => acc + Number(data.meta.transaction_amount), 0);
+    },
+
+    profileEarning () {
+      return this.transactions.filter(data => data.meta.transaction_type == 'Earning' && data.meta.transaction_profile == this.default_profile).reduce((acc, data) => acc + Number(data.meta.transaction_amount), 0);
+    },
+
+    profileExpense () {
+      return this.transactions.filter(data => data.meta.transaction_type == 'Expense' && data.meta.transaction_profile == this.default_profile).reduce((acc, data) => acc + Number(data.meta.transaction_amount), 0);
+    },
   },
   methods: {
     getImgUrl: function(file){
@@ -675,142 +671,89 @@ export default {
     submit: function() {
       var comp = this;
       comp.progressEnable = true;
-      if(comp.postformtype == 'editpostform'){
-          var formData = {
-            'title': this.title ? this.title : comp.postObj.title,
-            'transaction_category': comp.newcat ? comp.cats.find(item => item.name == comp.newcat).id : comp.postObj.transaction_category[0],
-            'meta': {
-              'transaction_amount': this.newamount ? this.newamount : comp.postObj.transaction_amount,
-              'transaction_note': this.newnote ? this.newnote : comp.postObj.transaction_note,
-              'transaction_type': this.newtype ? this.newtype : comp.postObj.transaction_type
-            }
-          };
+      comp.errors = [];
+      const isOld = comp.postformtype == 'editpostform' ? true : false;
+      const isValid = isOld ? 
+      (comp.postObj 
+        && comp.postObj.id 
+        && comp.postObj.title 
+        && comp.postObj.title.rendered 
+        && comp.postObj.meta.transaction_amount 
+        && comp.postObj.meta.transaction_type
+        && comp.postObj.transaction_category
+        && comp.postObj.transaction_category.length > 0 
+         )
+      : (
+        comp.newtype 
+        && comp.newamount 
+        && comp.newcat  
+        && comp.newamount > 0 
+      );
 
-          var createPost = new XMLHttpRequest();
-          createPost.open("POST", zbs_account.site + 'wp-json/wp/v2/transaction/' + comp.targetPost);
-          createPost.setRequestHeader("X-WP-Nonce", zbs_account.nonce);
-          createPost.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-          createPost.send(JSON.stringify(formData));
-          createPost.onreadystatechange = function() {
-            if(createPost.readyState == 0){
-              comp.btnDisabled = true;
-              comp.postStatus = 'Processing request...';
-            } else if (createPost.readyState == 1){
-              comp.postStatus = 'Request sending...';
-            } else if (createPost.readyState == 4){
-              if(createPost.status == 200){
-                comp.title = '';
-                comp.newamount = '';
-                comp.newnote = '';
-                comp.newtype = 'Expense';
-                comp.newcat = '';
-                var returnData = JSON.parse(this.responseText);
-                var indexOfEdited = comp.transactions.findIndex((data) => data.id == comp.targetPost);
-                if(comp.transactions[indexOfEdited].meta.transaction_type == 'Earning'){
-                  comp.totalEarning -= parseFloat(comp.transactions[indexOfEdited].meta.transaction_amount);
-                }
-                if(comp.transactions[indexOfEdited].meta.transaction_type == 'Expense'){
-                  comp.totalExpense -= parseFloat(comp.transactions[indexOfEdited].meta.transaction_amount);
-                }
-                if(returnData.meta.transaction_type == 'Earning'){
-                  comp.totalEarning += parseFloat(returnData.meta.transaction_amount);
-                }
-                if(returnData.meta.transaction_type == 'Expense'){
-                  comp.totalExpense += parseFloat(returnData.meta.transaction_amount);
-                }
-                comp.transactions.splice(comp.transactions.findIndex((data) => data.id == comp.targetPost), 1, returnData);
-                comp.postStatus = 'Successfully Posted';
-                comp.postPop = false;
-                comp.errors = [];
-                comp.btnDisabled = false;
-                comp.postStatus = 'Add to list';
-                comp.progressEnable = false;
-                comp.notificationPop('Transaction modified and list updated');
-              } else {
-                comp.postStatus = 'Error! Try again';
-                comp.btnDisabled = false;
-                comp.progressEnable = false;
-                comp.notificationPop('There was a error. Try again.');
-              }
-            }
-          }
-      } else {
-        comp.errors = [];
-        if(comp.title != '' && comp.newamount != '' && comp.newcat && comp.hasCat[0]){
-          var formData = {
-            'title': this.title,
-            'author': this.user.data.ID,
-            'status': 'publish',
-            'transaction_category': comp.cats.filter(item => item.name == comp.newcat)[0].id,
-            'meta': {
-              'transaction_amount': this.newamount,
-              'transaction_note': this.newnote,
-              'transaction_type': this.newtype
-            }
-          };
+      if(isValid) {
 
-// console.log(formData);
-          var createPost = new XMLHttpRequest();
-          createPost.open("POST", zbs_account.site + 'wp-json/wp/v2/transaction');
-          createPost.setRequestHeader("X-WP-Nonce", zbs_account.nonce);
-          createPost.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-          createPost.send(JSON.stringify(formData));
-          createPost.onreadystatechange = function() {
-            if(createPost.readyState == 0){
-              comp.btnDisabled = true;
-              comp.postStatus = 'Processing request...';
-            } else if (createPost.readyState == 1){
-              comp.postStatus = 'Requesting sending...';
-            } else if (createPost.readyState == 4){
-              if(createPost.status == 201){
-                comp.title = '';
-                comp.newamount = '';
-                comp.newnote = '';
-                comp.newtype = 'Expense';
-                comp.newcat = '';
-                var returnData = JSON.parse(this.responseText);
-                comp.transactions.unshift(returnData);
-                if(returnData.meta.transaction_type == 'Earning'){
-                  comp.totalEarning += parseFloat(returnData.meta.transaction_amount);
-                }
-                if(returnData.meta.transaction_type == 'Expense'){
-                  comp.totalExpense += parseFloat(returnData.meta.transaction_amount);
-                }
-                comp.postStatus = 'Successfully Posted';
-                comp.postPop = false;
-                comp.errors = [];
-                comp.btnDisabled = false;
-                comp.postStatus = 'Add to list';
-                comp.progressEnable = false;
-                comp.notificationPop('Transaction added to the list');
-              } else {
-                comp.postStatus = 'Error! Try again';
-                comp.btnDisabled = false;
-                comp.progressEnable = false;
-                comp.notificationPop('There was a error. Try again.');
-              }
-            }
-          }
-        } else {
-          if (!comp.title) {
-            comp.errors.push('Title required.');
-            comp.notificationPop('Title required');
-          }
-          if (!comp.newamount) {
-            comp.errors.push('Amount required.');
-            comp.notificationPop('Amount required');
-          }
-          if(!comp.newcat){
-            comp.errors.push('Category required.');
-            comp.notificationPop('Category required');
-          }
-          if(comp.newcat && !comp.hasCat[0]){
-            comp.errors.push('Category not valid.');
-            comp.notificationPop('Category not valid');
-          }
-          comp.progressEnable = false;
+        // console.log(comp.postObj.title);
+
+      var formData = {
+        id: comp.postObj && comp.postObj.id ? comp.postObj.id : '',
+        title: this.title || (comp.postObj && comp.postObj.title && comp.postObj.title.rendered ? comp.postObj.title.rendered : comp.postObj.title),
+        category: comp.cats.find(item => comp.newcat ? item.name == comp.newcat : item.id == comp.postObj.transaction_category[0]).id,
+        amount : this.newamount || comp.postObj.meta.transaction_amount,
+        note: this.newnote || isOld ? comp.postObj.meta.transaction_note : '',
+        type: this.newtype || comp.postObj.meta.transaction_type,
+        
+      }; 
+
+      // console.log(formData);
+
+      comp.btnDisabled = true;
+      comp.postStatus = 'Processing request...';
+        
+      axios.post(zbs_account.ajaxurl + '?action=zbs_update_transaction', formData, {
+        headers: {
+          'X-WP-Nonce': zbs_account.nonce,
+          'Content-Type': 'application/json;charset=UTF-8'
         }
+      }).then(function (response) { 
+
+        // console.log(formData, data);
+        comp.title = '';
+        comp.newamount = '';
+        comp.newnote = '';
+        comp.newtype = 'Expense';
+        comp.newcat = ''; 
+          
+        comp.postStatus = 'Successfully' + (isOld ? ' updated' : ' added') + ' transaction';
+        comp.postPop = false;
+        comp.errors = [];
+        comp.btnDisabled = false;
+        comp.postStatus = 'Add to list';
+        comp.progressEnable = false;
+        comp.notificationPop(`Transaction ${isOld ? 'updated' : 'added'}`);
+
+        comp.fetchTransactions();
+
+      }) 
+      
+
+
+      } else {
+        if (!comp.title || (comp.postObj && !comp.postObj.title)) {
+          comp.errors.push('Title required.');
+          comp.notificationPop('Title required');
+        }
+        if (!comp.newamount || (comp.postObj && !comp.postObj.transaction_amount)) {
+          comp.errors.push('Amount required.');
+          comp.notificationPop('Amount required');
+        }
+        if(!comp.newcat || (comp.postObj && !comp.postObj.transaction_category[0])){
+          comp.errors.push('Category required.');
+          comp.notificationPop('Category required');
+        } 
+         
+        comp.progressEnable = false;
       }
+ 
       
     },
     enEditForm: function(e){
@@ -1754,14 +1697,13 @@ export default {
       return temp.toLowerCase();
     },
     
-    inserProfile: function(){
-      jQuery.post(zbs_account.ajaxurl,
-                    { 'action':'zbs_insertProfile','accountName':this.accountName}, 
-                    function(data)
-                    {
-                      //console.log(data);
-                    }
-                  );
+    inserProfile: async function(){
+ 
+          const response = await axios.post(zbs_account.ajaxurl + "?action=zbs_insertProfile", { 
+            accountName: this.accountName
+          })
+          console.log(response.data);
+          this.displayProfile();
 
     },
     updateProfile: function(){
@@ -1771,35 +1713,33 @@ export default {
                     {
                       //console.log(data);
                     }
-                  );
+                    );
     },
-    deleteProfile: function(){
-      jQuery.post(zbs_account.ajaxurl,
-                    { 'action':'zbs_deleteProfile','id': 0 }, 
-                    function(data)
-                    {
-                      //console.log(data);
-                    }
-                  );
+    deleteProfile: async function(id){
+      const response = await axios.post(zbs_account.ajaxurl + "?action=zbs_deleteProfile", { 
+        id: id
+      });
+      console.log(response.data);
+      this.displayProfile();
     },
     displayProfile: function(){
-     jQuery.post(zbs_account.ajaxurl,
-                  { 'action':'zbs_displayProfile','uid': 4 }, 
-                  function(data)
-                  {
-                    //console.log(data);
-                    this.accounts=data;
-                  }
-                );
+     fetch(zbs_account.ajaxurl + '?action=zbs_displayProfile')
+      .then((r) => {
+        return r.json()
+      })
+      .then((data) => {
+        this.profiles = data.data || [];
+      })
     },
-    defaultProfileID: function(){
-     jQuery.post(zbs_account.ajaxurl,
-                  { 'action':'zbs_profileID','uid': 4 , 'profileID': 1 }, 
-                  function(data)
-                  {
-                    //console.log(data);
-                  }
-                );
+    async setDefaultProfile (profileID){
+        const response = await axios.post(zbs_account.ajaxurl + "?action=zbs_set_default_profile", { 
+          profileID: profileID
+        });
+        // console.log(response.data);
+        if(response.data.success) {
+          this.default_profile = profileID;
+        }
+        this.displayProfile();
     },
 
     activateReadMore: function(){
@@ -1807,6 +1747,45 @@ export default {
     },
     deactivateReadMore: function(){
       this.readMoreActivated = false;
+    },
+
+
+    async fetchTransactions(){
+
+      var date = new Date();
+      var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+      if(window.location.hash){
+        this.sidebarPage = window.location.hash.replace('#', '');
+      }
+
+      fetch(zbs_account.site + 'wp-json/wp/v2/transaction?_embed&author=' + this.user.data.ID)
+        .then((r) => {
+          return r.json();
+        })
+        .then((res) => {
+          this.totalEarning = 0;
+          this.totalExpense = 0;
+
+          console.log(res[0]);
+          this.transactions = [];
+
+          res.forEach(item => {
+            this.transactions.push({...item, expand: false, showNote: item.meta.transaction_note ? true : false});
+            // if(item.meta.transaction_type == 'Earning'){
+            //   this.totalEarning += parseFloat(item.meta.transaction_amount);
+            // }
+            // if(item.meta.transaction_type == 'Expense'){
+            //   this.totalExpense += parseFloat(item.meta.transaction_amount);
+            // }
+          });
+
+          if((this.transactions.length / this.paging.pageSize) > parseInt(this.transactions.length / this.paging.pageSize)){
+            this.paging.totalPage =  parseInt(this.transactions.length / this.paging.pageSize) + 1;
+          } else {
+            this.paging.totalPage =  parseInt(this.transactions.length / this.paging.pageSize);
+          }
+
+        }) 
     }
     
 

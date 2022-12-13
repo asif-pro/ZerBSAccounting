@@ -8,29 +8,37 @@ class Zero_BS_AccountingPluginActivate
     global $wpdb;
 
 //creating Table intially, if already not exists
-        $table_name = $wpdb->prefix.'account_profiles';
+        $table_name = $wpdb->prefix.'zbs_profiles';
         $sql = "CREATE TABLE IF NOT EXISTS {$table_name} (
-                id INT NOT NULL AUTO_INCREMENT,
-                account_name VARCHAR (250),
-                user_id INT (10),
+                id INT(30) NOT NULL AUTO_INCREMENT,
+                name VARCHAR (250) NOT NULL,
+                user_id INT (30) NOT NULL,
+                currency varchar(10) DEFAULT 'USD',
+                currency_position varchar(10) DEFAULT 'left',
+                currency_thousand_separator varchar(10) DEFAULT ',',
+                currency_decimal_separator varchar(10) DEFAULT '.',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 PRIMARY KEY (id)
               );";
               require_once (ABSPATH."wp-admin/includes/upgrade.php");
               dbDelta($sql);
 
-//Adding/Insert data into table while creating table initially, while there is no data on table
-          $user = wp_get_current_user();
-          $checkuser = $wpdb->get_var(
-            $wpdb->prepare( "SELECT COUNT(*) from {$table_name} where user_id = %d", get_current_user_id() )
-          );
+// //Adding/Insert data into table while creating table initially, while there is no data on table
+//           $user = wp_get_current_user();
+//           $checkuser = $wpdb->get_var(
+//             $wpdb->prepare( "SELECT COUNT(*) from {$table_name} where user_id = %d", get_current_user_id() )
+//           );
           
-          if(! $checkuser){
-            $wpdb->insert($table_name,
-                [
-                  'account_name'=>$user->user_nicename,
-                  'user_id'=>$user->ID
-                ]);
-          }
+//           if(! $checkuser){
+//             $wpdb->insert($table_name,
+//                 [
+//                   'account_name'=>$user->user_nicename,
+//                   'user_id'=>$user->ID
+//                 ]);
+//           }
+
+      // init_zbs_users
+        init_zbs_users();
 
 
     if ( null === $wpdb->get_row( "SELECT post_name FROM {$wpdb->prefix}posts WHERE post_name = 'zero-bs-accounting'", 'ARRAY_A' ) ) {   

@@ -13,14 +13,18 @@
     <table>
       <thead>
         <tr>
-          <th>Account Name</th>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Earning</th>
           <th>Action</th>
         </tr>
       </thead>
-      <tbody v-for="account in this.$parent.accounts">
+      <tbody v-for="profile in this.$parent.profiles" :key="profile.id">
         <tr>
-          <td>{{account.account_name}}</td>
-          <td>{{account.user_id}}</td>
+          <td>{{profile.id}}</td>
+          <td>{{profile.name}}</td>
+          <td>{{ this.$root.transactions.filter(data => data.meta.transaction_type == 'Earning' && data.meta.transaction_profile == profile.id).reduce((acc, data) => acc + Number(data.meta.transaction_amount), 0) }}</td>
+          <td><button @click.prevent="this.$root.deleteProfile(profile.id)">Delete</button></td>
         </tr>
       </tbody>
     </table>

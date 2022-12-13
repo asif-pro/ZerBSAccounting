@@ -14,7 +14,13 @@
                   <span>Using as self</span>
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512.011 512.011"><path d="M505.755 123.592c-8.341-8.341-21.824-8.341-30.165 0L256.005 343.176 36.421 123.592c-8.341-8.341-21.824-8.341-30.165 0s-8.341 21.824 0 30.165l234.667 234.667c4.16 4.16 9.621 6.251 15.083 6.251s10.923-2.091 15.083-6.251l234.667-234.667c8.34-8.341 8.34-21.824-.001-30.165z"/></svg>
                 </span>
-                <div class="profile-selector" @click="this.$parent.proPop=true">Add a new profile (Pro)</div>
+                <div class="profile-selector" @click="this.$parent.proPop=true">
+                  
+                  <ul>
+                    <li v-for="profile in this.$root.profiles" :key="profile.id" @click.prevent="this.$root.setDefaultProfile(profile.id)"><span v-html="profile.name"></span> {{this.$root.default_profile == profile.id ? '(Selected)' : ''}}</li>
+                    <li>Add a new profile (Pro)</li>
+                  </ul>
+                  </div>
               </div>
             </div>
           </div>
@@ -25,7 +31,9 @@
               <div class="kh-card kh-card-flex">
                 <div class="kh-card-content">
                     <p>Earning</p>
-                    <h4>{{this.$parent.currencify(this.$parent.totalEarning, 2)}}</h4>
+                    <!-- {{this.$root.default_profile}} -->
+                    <!-- {{this.$root.transactions.filter(t => t.meta.transaction_type === 'Earning' && this.$root.default_profile == t.meta.transaction_profile)}} -->
+                    <h4>{{this.$parent.currencify(this.$root.profileEarning, 2)}}</h4>
                 </div>
               </div>
             </div>
@@ -33,7 +41,7 @@
                 <div class="kh-card kh-card-flex">
                     <div class="kh-card-content">
                         <p>Expense</p>
-                        <h4>{{this.$parent.currencify(this.$parent.totalExpense, 2)}}</h4>
+                        <h4>{{this.$parent.currencify(this.$root.profileExpense, 2)}}</h4>
                     </div>
                 </div>
             </div>

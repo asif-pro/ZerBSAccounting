@@ -66,7 +66,7 @@
         <div class="kh-row kh-category-list">
           <div class="kh-col-6" v-for="item in this.$parent.filteredCat" :key="item.id">
             <div class="kh-category-list-item">
-              <span class="cat-icon" :style="{ color: item.meta.color[0] ? item.meta.color[0] : 'rgb(103, 104, 108)' }"><span class="material-icons-outlined">{{item.meta.icon[0] ? item.meta.icon[0] : 'quiz'}}</span></span>
+              <span class="cat-icon" :style="{ color: item.meta && item.meta.icon && item.meta.icon.length ? item.meta.color[0] : 'rgb(103, 104, 108)' }"><span class="material-icons-outlined">{{item.meta && item.meta.icon && item.meta.icon.length  ? item.meta.icon[0] : 'quiz'}}</span></span>
               <span class="cat-name" v-html="item.name"></span>
             </div>
           </div>
