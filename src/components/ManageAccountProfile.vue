@@ -17,7 +17,7 @@
           <th>Action</th>
         </tr>
       </thead>
-      <tbody v-for="account in this.$parent.accounts">
+      <tbody v-for="account in this.accounts">
         <tr>
           <td>{{account.account_name}}</td>
           <td>{{account.user_id}}</td>
@@ -32,6 +32,17 @@
 <script>
 export default {
     name: 'ManageAccountProfile',
+    mounted(){
+      this.accounts=this.$parent.displayProfile();
+      //this.accounts = this.$parent.accounts;
+
+    },
+    data(){
+      return{
+        accounts:[],
+
+      }
+    }
 
 }
 </script>

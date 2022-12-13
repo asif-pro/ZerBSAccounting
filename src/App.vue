@@ -1789,6 +1789,7 @@ export default {
                   {
                     //console.log(data);
                     this.accounts=data;
+                    return data;
                   }
                 );
     },
