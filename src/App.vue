@@ -15,7 +15,7 @@
          <li class="setting-item" :class="{active: configActive}" @click="viewConfigurationPage"><span class="material-icons-outlined">settings</span><span class="sidebar-menu-title">Configuration</span></li>
       </ul>
        <ul class="zbs-sidebar-menu zbs-sidebar-menu-bottom">
-        <li :class="{active: sidebarPage == 'integrations'}" @click="sidebarPageChange('manageAccountProfile')"><span class="material-icons-outlined">wallet</span><span class="sidebar-menu-title">Manage Account Profile</span></li>
+        <li :class="{active: sidebarPage == 'manageAccountProfile'}" @click="sidebarPageChange('manageAccountProfile')"><span class="material-icons-outlined">wallet</span><span class="sidebar-menu-title">Manage Account Profile</span></li>
         <li :class="{active: configActive}" @click="viewConfigurationPage"><span class="material-icons-outlined">settings</span><span class="sidebar-menu-title">Configuration</span></li>
       </ul> 
 
