@@ -813,6 +813,7 @@ export default {
 
       var createPost = new XMLHttpRequest();
       createPost.open("POST", zbs_account.site + 'wp-json/wp/v2/settings');
+      //createPost.open("POST", zbs_account.ajaxurl + '?action=wp_ajax_zbs_updated_profile_settings');
       createPost.setRequestHeader("X-WP-Nonce", zbs_account.nonce);
       createPost.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
       createPost.send(JSON.stringify(formData));
@@ -1766,7 +1767,7 @@ export default {
           this.totalEarning = 0;
           this.totalExpense = 0;
 
-          console.log(res[0]);
+          //console.log(res[0]);
           this.transactions = [];
 
           res.forEach(item => {

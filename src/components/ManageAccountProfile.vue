@@ -1,13 +1,12 @@
 <template>
   <div>
-    <h2>Manage Account Profile</h2>
+    <h2>Manage Account Profiles</h2>
     <form @submit.prevent="this.$parent.inserProfile">
       <input type="text" required v-model="this.$parent.accountName">
       <br>
       <button type="submit">Insert</button>
     </form>
     <button >Update</button>
-    <button >Delete</button>
   </div>
   <div class="" >
     <table>
@@ -28,7 +27,6 @@
         </tr>
       </tbody>
     </table>
-    <button @click="this.$parent.displayProfile">Fetch</button>
   </div>
 
 </template>
