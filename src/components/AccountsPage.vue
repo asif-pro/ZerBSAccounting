@@ -4,6 +4,7 @@
         <div class="kh-row">
             <div class="kh-col debt-tracking-title">
               <h3 class="top-welecome">Hi, {{this.$parent.user.data.display_name}}</h3>
+                  <li v-for="profilename in this.$root.profiles" :key="profilename.id">{{profilename.id  === this.$root.default_profile ? profilename.name : ''}}</li>
               <div class="profile-select">
                 <span class="profile-selected">
                   <span>Switch Account</span>
@@ -25,8 +26,6 @@
               <div class="kh-card kh-card-flex">
                 <div class="kh-card-content">
                     <p>Earning</p>
-                    <!-- {{this.$root.default_profile}} -->
-                    <!-- {{this.$root.transactions.filter(t => t.meta.transaction_type === 'Earning' && this.$root.default_profile == t.meta.transaction_profile)}} -->
                     <h4>{{this.$parent.currencify(this.$root.profileEarning, 2)}}</h4>
                 </div>
               </div>
