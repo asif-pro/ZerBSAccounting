@@ -1,6 +1,6 @@
 <template>
   <div>
-    <form @submit.prevent="this.$parent.inserProfile">
+    <form id="nameInput" @submit.prevent="this.$parent.inserProfile">
       <input type="text" required v-model="this.$parent.accountName">
       <br>
       <button type="submit">Insert</button>
