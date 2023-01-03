@@ -59,9 +59,37 @@
                 </div>
                
             </div>
-        </div>
+    </div>
   </div>
-
+<div class="kh-container">
+  <div class="account-table-responsive">
+              <table class="kh-account-table">
+                  <tr class="kh-account-table-header">
+                      <th class="type-th"><span>Name</span></th>
+                      <th class="kh-amount-td"><span>Total Earning</span></th>
+                      <th class="kh-dc-td"><span>Total Expense</span></th>
+                      <th class="kh-person-add-td"><span>&nbsp;</span></th>
+                  </tr>
+                  <tr class="kh-account-table-items" v-for="profile in this.$parent.profiles" :key="profile.id">
+                    <td class="kh-amount-td"><span class="kh-amount">{{profile.name}}</span></td>
+                      <td class="kh-dc-td"><span class="kh-type" >+{{ this.$root.transactions.filter(data => data.meta.transaction_type == 'Earning' && data.meta.transaction_profile == profile.id).reduce((acc, data) => acc + Number(data.meta.transaction_amount), 0) }}</span></td>
+                      <td class="kh-dc-td"><span class="kh-type kh-card-btn-round kh-card-btn-remove" >-{{ this.$root.transactions.filter(data => data.meta.transaction_type == 'Expense' && data.meta.transaction_profile == profile.id).reduce((acc, data) => acc + Number(data.meta.transaction_amount), 0) }}</span></td>
+                      <td class="kh-person-add-td">
+                        <label class="placehold-btn kh-card-btn kh-card-btn-round kh-card-btn-add">
+                          <span class="material-icons-outlined">
+                                    edit
+                          </span>
+                        </label>
+                        <label class="placehold-btn kh-card-btn kh-card-btn-round kh-card-btn-remove" @click.prevent="this.$root.deleteProfile(profile.id)">
+                          <span class="material-icons-outlined">
+                                    delete
+                          </span>
+                        </label>
+                      </td>
+                  </tr>
+              </table>
+            </div>
+</div>
 </template>
 
 <script>
