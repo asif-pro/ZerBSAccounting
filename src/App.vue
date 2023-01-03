@@ -1717,11 +1717,12 @@ export default {
                     );
     },
     deleteProfile: async function(id){
+      if(confirm("Are You sure to delete this Account Profile ?")){
       const response = await axios.post(zbs_account.ajaxurl + "?action=zbs_deleteProfile", { 
         id: id
       });
       console.log(response.data);
-      this.displayProfile();
+      this.displayProfile();}
     },
     displayProfile: function(){
      fetch(zbs_account.ajaxurl + '?action=zbs_displayProfile')
