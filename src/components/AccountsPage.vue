@@ -11,7 +11,7 @@
                 </span>
                 <div class="profile-selector">
                   <ul>
-                    <li>Add a new profile</li>
+                    <li :class="{active: this.$root.sidebarPage == 'manageAccountProfile'}" @click="this.$root.sidebarPageChange('manageAccountProfile')">Add a new profile</li>
                     <li v-for="profile in this.$root.profiles" :key="profile.id" @click.prevent="this.$root.setDefaultProfile(profile.id)"><span v-html="profile.name"></span> {{this.$root.default_profile == profile.id ? '(Selected)' : ''}}</li>
                   </ul>
                   </div>

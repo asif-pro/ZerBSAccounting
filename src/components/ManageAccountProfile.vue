@@ -11,7 +11,7 @@
             <h2 class="block-heading">Manage Account Profiles</h2>
             <div class="search_btn_wrapper">
                 <form>
-                    <input type="text" placeholder="Search..." />
+                    <input type="text" placeholder="Search Accounts..." />
                     <button class="search_btn">
                         <span class="material-icons-outlined"> search </span>
                     </button>
