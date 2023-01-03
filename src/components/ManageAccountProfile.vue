@@ -6,7 +6,7 @@
       <button type="submit">Insert</button>
     </form>
   </div>
-  <div>
+  <div class="kh-container">
     <div class="manage_account_block">
             <h2 class="block-heading">Manage Account Profiles</h2>
             <div class="search_btn_wrapper">
@@ -18,7 +18,7 @@
                 </form>
                 <button class="add-new">
                     <span class="material-icons-outlined"> note_add </span>
-                    Add New
+                    Add New Profile
                 </button>
             </div>
             <div class="table-wrapper">
@@ -40,8 +40,8 @@
                     <div class="table-cell">
                         <span class="heading-title">{{profile.name}}</span>
                     </div>
-                    <div class="table-cell">{{ this.$root.transactions.filter(data => data.meta.transaction_type == 'Earning' && data.meta.transaction_profile == profile.id).reduce((acc, data) => acc + Number(data.meta.transaction_amount), 0) }}</div>
-                    <div class="table-cell">{{ this.$root.transactions.filter(data => data.meta.transaction_type == 'Expense' && data.meta.transaction_profile == profile.id).reduce((acc, data) => acc + Number(data.meta.transaction_amount), 0) }}</div>
+                    <div class="table-cell">+{{ this.$root.transactions.filter(data => data.meta.transaction_type == 'Earning' && data.meta.transaction_profile == profile.id).reduce((acc, data) => acc + Number(data.meta.transaction_amount), 0) }}</div>
+                    <div class="table-cell">-{{ this.$root.transactions.filter(data => data.meta.transaction_type == 'Expense' && data.meta.transaction_profile == profile.id).reduce((acc, data) => acc + Number(data.meta.transaction_amount), 0) }}</div>
                     <div class="table-cell">
                         <div class="settingBtns">
                             <button>
@@ -72,8 +72,7 @@ export default {
 </script>
 
 <style>
-  <style>
-            .manage_account_block .block-heading {
+  .manage_account_block .block-heading {
                 text-align: left;
                 font-size: 22px;
                 font-weight: 600;
@@ -93,21 +92,19 @@ export default {
             }
             .search_btn_wrapper form input[type="text"] {
                 padding: 8px 10px;
-                border: 1px solid gray;
+                border: 1px solid rgb(224, 230, 237);
                 border-radius: 5px;
                 font-size: 20px;
                 outline: none;
                 box-shadow: none;
                 max-width: 290px;
                 width: 100%;
-                box-shadow: rgba(17, 17, 26, 0.05) 0px 4px 16px,
-                    rgba(17, 17, 26, 0.05) 0px 8px 32px;
+                box-shadow: rgba(31, 45, 61, 0.1) 2px 5px 17px 0px;
             }
             .search_btn_wrapper form input[type="text"]:focus {
                 outline: none;
-                box-shadow: rgba(17, 17, 26, 0.05) 0px 4px 16px,
-                    rgba(17, 17, 26, 0.05) 0px 8px 32px;
-                border: 1px solid gray;
+                box-shadow: rgba(31, 45, 61, 0.1) 2px 5px 17px 0px;
+                border: 1px solid rgb(224, 230, 237);
             }
             .search_btn_wrapper form button {
                 border: none;
@@ -115,12 +112,15 @@ export default {
                 background-color: transparent;
                 box-shadow: none;
                 position: absolute;
-                right: -20px;
+                right: 05px;
                 top: 50%;
                 transform: translateY(-50%);
                 padding: 4.5px;
                 background: white;
-                cursor: pointer;
+                pointer-events: none;
+            }
+            .search_btn_wrapper form button span {
+                color: rgb(224, 230, 237);
             }
             .search_btn_wrapper form button:focus {
                 outline: none;
@@ -136,10 +136,12 @@ export default {
                 justify-content: center;
                 font-size: 16px;
                 cursor: pointer;
-                background: blue;
+                background: #3498DB;
                 color: white;
                 padding: 8px 15px;
                 border-radius: 25px;
+                transition: all 0.3s ease;
+                text-transform: capitalize;
             }
             .search_btn_wrapper .add-new span {
                 margin-right: 5px;
@@ -150,6 +152,9 @@ export default {
                 box-shadow: none;
                 border: none;
             }
+            .search_btn_wrapper .add-new:hover {
+                margin-top: -5px;
+            }
             .table-wrapper {
                 width: 100%;
             }
@@ -157,21 +162,29 @@ export default {
                 width: 100%;
                 display: grid;
                 grid-template-columns: repeat(4, 1fr);
-                border-top: 1px solid green;
-                border-bottom: 1px solid green;
+                border-top: 1px solid rgb(224, 230, 237);
+                border-bottom: 1px solid rgb(224, 230, 237);
+                background-color: #dee9f5;
             }
             .table-cell {
-                padding: 5px 3px;
+                padding: 8px 5px;
+                transition: all 0.3s ease;
             }
             .table-head .table-cell .heading-title {
-                color: blue;
+                color: rgb(81, 81, 86);
                 font-weight: 600;
             }
             .table-cells {
                 width: 100%;
                 display: grid;
                 grid-template-columns: repeat(4, 1fr);
-                border-bottom: 1px solid green;
+                border-bottom: 1px solid rgb(224, 230, 237);
+            }
+            .table-cells:hover .table-cell {
+                transform: translateY(-1px) scale(1.01);
+            }
+            .table-cells:hover button .material-icons-outlined {
+                color: red;
             }
             .table-cell .settingBtns button {
                 border: none;
@@ -188,26 +201,13 @@ export default {
                 border: none;
             }
             .table-cells .table-cell .heading-title {
-                color: blue;
+                color: rgb(136, 136, 141);
                 font-weight: 600;
             }
-            .material-icons-outlined {
-                font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0,
-                    "opsz" 48;
+            .table-cells:hover .heading-title {
+                color: rgb(0, 0, 0);
             }
-​
-            .material-icons-outlined {
-                font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0,
-                    "opsz" 48;
-            }
-​
-            .material-icons-outlined {
-                font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0,
-                    "opsz" 48;
-            }
-​
-            .material-icons-outlined {
-                font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0,
-                    "opsz" 48;
+            .table-cells:hover .table-cell {
+              color: rgb(0, 0, 0);
             }
 </style>
