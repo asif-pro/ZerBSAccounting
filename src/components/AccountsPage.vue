@@ -92,8 +92,8 @@
                 </svg>
               </label>
           </div>
-          <!-- <div class="kh-post-pop" :class="{ active: this.$parent.postPop }" @click="this.$parent.handleFormFocus">
-            <form id="postForm" class="post-form" @submit.prevent="submit">
+          <div class="kh-post-pop" :class="{ active: this.$parent.postPop }" @click="this.$parent.handleFormFocus">
+            <form id="postForm" class="post-form" @submit.prevent="this.$parent.submit">
               <label class="placehold-btn">
                 <input type="checkbox" v-model="this.$parent.postPop"/>
                 <span class="material-icons-outlined">close</span>
@@ -179,7 +179,7 @@
               <input type="hidden" action="new_transaction"/>
               <button type="submit" :disabled='this.$parent.btnDisabled'>{{this.$parent.postStatus}}</button>
             </form>
-          </div> -->
+          </div>
           <div class="account-table-responsive">
             <table class="kh-account-table">
                 <tr class="kh-account-table-header">

@@ -64,7 +64,7 @@
     </div> 
 <!-- PostPopup End -->
 
-  <div class="zbs-progress" :class="{ active: progressEnable }"><svg class="zbs-spinner" width="65px" height="65px" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg"><circle class="circle" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30"></circle></svg>
+  <!-- <div class="zbs-progress" :class="{ active: progressEnable }"><svg class="zbs-spinner" width="65px" height="65px" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg"><circle class="circle" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30"></circle></svg>
   </div>
     <div class="zbs-notification" :class="{ active: notificationEnable }">{{notification}}
     </div>
@@ -156,7 +156,7 @@
               <input type="hidden" action="new_transaction"/>
               <button type="submit" :disabled='btnDisabled'>{{postStatus}}</button>
             </form>
-          </div>
+          </div> -->
           
     <!-- ProPopUp Start -->
     <div class="kh-pro-pop" :class="{ active: proPop }" @click="handleProFocus">
