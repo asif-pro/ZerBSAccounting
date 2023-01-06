@@ -252,7 +252,7 @@ class Zero_BS_Accounting
             'description'        => __('Transaction for zbs-account', 'zbs-account'),
             'public'             => true,
             'publicly_queryable' => true,
-            'show_ui'            => 1,
+            'show_ui'            => false,
             'show_in_menu'       => true,
             'show_in_rest'       => true,
             'query_var'          => true,
