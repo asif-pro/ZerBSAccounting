@@ -64,12 +64,12 @@
     </div> 
 <!-- PostPopup End -->
 
-  <!-- <div class="zbs-progress" :class="{ active: progressEnable }"><svg class="zbs-spinner" width="65px" height="65px" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg"><circle class="circle" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30"></circle></svg>
+  <div class="zbs-progress" :class="{ active: progressEnable }"><svg class="zbs-spinner" width="65px" height="65px" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg"><circle class="circle" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30"></circle></svg>
   </div>
     <div class="zbs-notification" :class="{ active: notificationEnable }">{{notification}}
     </div>
     
-          <div class="kh-post-pop" :class="{ active: postPop }" @click="handleFormFocus">
+          <!-- <div class="kh-post-pop" :class="{ active: postPop }" @click="handleFormFocus">
             <form id="postForm" class="post-form" @submit.prevent="submit">
               <label class="placehold-btn">
                 <input type="checkbox" v-model="postPop"/>
@@ -1707,14 +1707,16 @@ export default {
           this.displayProfile();
 
     },
-    updateProfile: function(){
+    updateProfile: function(id, name){
       jQuery.post(zbs_account.ajaxurl,
-                    { 'action':'zbs_updateProfile','id': 0,'updatedName':'Aname' }, 
+                    { 'action':'zbs_updateProfile','id': id,'updatedName':name }, 
                     function(data)
                     {
                       //console.log(data);
                     }
                     );
+      this.displayProfile();
+      console.log("your call has come this far");
     },
     deleteProfile: async function(id){
       if(confirm("Are You sure to delete this Account Profile ?")){
@@ -1750,8 +1752,7 @@ export default {
     deactivateReadMore: function(){
       this.readMoreActivated = false;
     },
-
-
+    
     async fetchTransactions(){
 
       var date = new Date();

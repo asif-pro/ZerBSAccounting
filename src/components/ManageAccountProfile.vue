@@ -44,7 +44,7 @@
                     <div class="table-cell">-{{ this.$root.transactions.filter(data => data.meta.transaction_type == 'Expense' && data.meta.transaction_profile == profile.id).reduce((acc, data) => acc + Number(data.meta.transaction_amount), 0) }}</div>
                     <div class="table-cell">
                         <div class="settingBtns">
-                            <button>
+                            <button @click.prevent="updateAccountName(profile.id, profile.name)">
                                 <span class="material-icons-outlined">
                                     edit
                                 </span>
@@ -75,7 +75,7 @@
                       <td class="kh-dc-td"><span class="kh-type" >+{{ this.$root.transactions.filter(data => data.meta.transaction_type == 'Earning' && data.meta.transaction_profile == profile.id).reduce((acc, data) => acc + Number(data.meta.transaction_amount), 0) }}</span></td>
                       <td class="kh-dc-td"><span class="kh-type kh-card-btn-round kh-card-btn-remove" >-{{ this.$root.transactions.filter(data => data.meta.transaction_type == 'Expense' && data.meta.transaction_profile == profile.id).reduce((acc, data) => acc + Number(data.meta.transaction_amount), 0) }}</span></td>
                       <td class="kh-person-add-td">
-                        <label class="placehold-btn kh-card-btn kh-card-btn-round kh-card-btn-add">
+                        <label class="placehold-btn kh-card-btn kh-card-btn-round kh-card-btn-add" @click.prevent="updateAccountName(profile.id, profile.name)">
                           <span class="material-icons-outlined">
                                     edit
                           </span>
@@ -90,11 +90,70 @@
               </table>
             </div>
 </div>
+
+<div v-if="showUpdatemodel">
+    <input type="text" required v-model="this.updatedName">
+      <br>
+      <button type="submit" @click.prevent="callUpdate">Update</button>
+</div>
+
+<!-- <div v-if="showUpdatemodel">
+    <transition name="model">
+     <div class="modal-mask">
+      <div class="modal-wrapper">
+       <div class="modal-dialog">
+        <div class="modal-content">
+         <div class="modal-header">
+          <button type="button" class="close" @click="showUpdatemodel=false"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Here goes Title</h4>
+         </div>
+         <div class="modal-body">
+          <div class="form-group">
+           <label>Enter First Name</label>
+           <input type="text" class="form-control" v-model="updatedName" />
+          </div>
+          <div class="form-group">
+           <label>Enter Last Name</label>
+           <input type="text" class="form-control"/>
+          </div>
+          <br />
+          <div align="center">
+           <input type="hidden" v-model="profileId" />
+           <input type="button" class="btn btn-success btn-xs" />
+          </div>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+    </transition>
+</div> -->
 </template>
 
 <script>
 export default {
     name: 'ManageAccountProfile',
+
+    data(){
+        return{
+        showUpdatemodel: false,
+        profileId:null,
+        updatedName:""
+        }
+    },
+    methods :{
+        updateAccountName(id, name){
+            this.showUpdatemodel = !this.showUpdatemodel;
+            this.updatedName = name;
+            this.profileId = id;
+            console.log(this.updatedName);
+
+            
+        },
+        callUpdate(){
+            this.$root.updateProfile(this.profileId, this.updatedName);
+        }
+    }
 
 }
 </script>
@@ -238,4 +297,21 @@ export default {
             .table-cells:hover .table-cell {
               color: rgb(0, 0, 0);
             }
+
+            /* .modal-mask {
+     position: fixed;
+     z-index: 9998;
+     top: 0;
+     left: 0;
+     width: 100%;
+     height: 100%;
+     background-color: rgba(0, 0, 0, .5);
+     display: table;
+     transition: opacity .3s ease;
+   }
+
+   .modal-wrapper {
+     display: table-cell;
+     vertical-align: middle;
+   } */
 </style>
